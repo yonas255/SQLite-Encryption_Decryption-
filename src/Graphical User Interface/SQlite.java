@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import javax.swing.JOptionPane;
 import com.ibatis.common.jdbc.ScriptRunner;
+import de.svws_nrw.ext.jbcrypt.BCrypt;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -209,6 +210,7 @@ public class SQlite {
     String passportNumber = Registration.jTextField4.getText();
     String Email = Registration.jTextField5.getText();
     String password = Registration.jTextField9.getText();
+    String hashedpassword=BCrypt.hashpw(password, BCrypt.gensalt());
     String phoneNo = Registration.jTextField7.getText();
     String Country = Registration.jTextField8.getText();
     String PostCode = Registration.jTextField6.getText();
@@ -272,7 +274,7 @@ public class SQlite {
                 preparedStatement.setString(4, DOB);
                 preparedStatement.setString(5, passportNumber);
                 preparedStatement.setString(6, Email);
-                preparedStatement.setString(7, password);
+                preparedStatement.setString(7, hashedpassword);
                 preparedStatement.setString(8, phoneNo);
                 preparedStatement.setString(9, Country);
                 preparedStatement.setString(10, PostCode);
@@ -317,13 +319,13 @@ public class SQlite {
         JOptionPane.showMessageDialog(null, e.getMessage());
     }
 }
-  
-       
+    
 public static void updateUserDetails() {
     try (Connection conn = DriverManager.getConnection(url)) {
         Statement statement = conn.createStatement();
         
-        String password = EditUserAccount.jTextField5.getText();  
+        String password = EditUserAccount.jTextField5.getText();
+        String hashedpassword=BCrypt.hashpw(password, BCrypt.gensalt());
      String updateQuery = "UPDATE UserDetails SET " +
                 "FirstName='" + EditUserAccount.jTextField2.getText() + "', " +
                 "SecondName='" + EditUserAccount.jTextField3.getText() + "', " +
@@ -331,7 +333,7 @@ public static void updateUserDetails() {
                 EditUserAccount.jTextField12.getText() + "', " +
                 "PassportNO='" + EditUserAccount.jTextField10.getText() + "', " +
                 "Email='" + EditUserAccount.jTextField5.getText() + "', " +
-                "Password='" + password+ "', " +
+                "Password='" + hashedpassword+ "', " +
                 "PhoneNO='" + EditUserAccount.jTextField7.getText() + "', " +
                 "Country='" + EditUserAccount.jTextField8.getText() + "', " + 
                 "PostCode='" + EditUserAccount.jTextField9.getText() + "' " +
