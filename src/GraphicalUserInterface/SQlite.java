@@ -79,6 +79,7 @@ public class SQlite {
             }//end try catch
             
             ScriptRunner ();
+            HashingPreviousPasswords();
         
         } else {
 
@@ -104,6 +105,46 @@ public class SQlite {
             System.out.println(e);
         }
 
+    }
+    
+    public static void HashingPreviousPasswords(){
+        try (Connection conn = DriverManager.getConnection(url)) {// using url establish a connection with the database 
+          String selectQuery = "SELECT ID, password FROM UserDetails";// get users IDs and passwords
+          String updateQuery = "UPDATE UserDetails SET password = ? WHERE ID = ?";// update them
+
+        
+        try (PreparedStatement selectStatment= conn.prepareStatement(selectQuery);//prepare sql statement for selecting.
+             PreparedStatement updateStatment= conn.prepareStatement(updateQuery);  //prepare sql statement for updating
+             ResultSet rs = selectStatment.executeQuery()){// excute them to recive the current passwords storing in rs(resultset).
+                
+             while(rs.next()){//loops through each record to acess the user id and password
+                 // get the user ids and passwords from current record/ resultset
+                 String userid = rs.getString("UserID");
+                 String TextPasswords=rs.getString("Password");
+                 
+                 //ckeck if the passwors hashed or start with hashing characters if not it will hashe them
+                 if(!TextPasswords.startsWith("$2a$")){
+                    String hashedpassword=BCrypt.hashpw(TextPasswords, BCrypt.gensalt());
+                 
+                    // update the old text passwords to the new hashed passwords to the correct user id
+                    updateStatment.setString(1,hashedpassword);
+                    updateStatment.setString(2,userid);
+                    updateStatment.executeUpdate();// run updates on the database to replace the hashed passwords
+                 
+                 }
+             }
+             JOptionPane.showMessageDialog(null, "all existing passwors are hashed successfully! ");
+             
+             }catch (SQLException e){// throw an sql related exception
+                     JOptionPane.showMessageDialog(null,"error with hashing the passwords");
+                     e.printStackTrace();
+                     
+               }
+                
+           }catch (SQLException e){// throw an connection related exception
+               JOptionPane.showMessageDialog(null,"Connection gone wrong" + e.getMessage());
+           
+           }
     }
       
      public static void login() {
