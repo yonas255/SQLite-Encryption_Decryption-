@@ -109,8 +109,8 @@ public class SQlite {
     
     public static void HashingPreviousPasswords(){
         try (Connection conn = DriverManager.getConnection(url)) {// using url establish a connection with the database 
-          String selectQuery = "SELECT ID, password FROM UserDetails";// get users IDs and passwords
-          String updateQuery = "UPDATE UserDetails SET password = ? WHERE ID = ?";// update them
+          String selectQuery = "SELECT UserID, password FROM UserDetails";// get users IDs and passwords
+          String updateQuery = "UPDATE UserDetails SET password = ? WHERE UserID = ?";// update them
 
         
         try (PreparedStatement selectStatment= conn.prepareStatement(selectQuery);//prepare sql statement for selecting.

@@ -5,7 +5,7 @@ CREATE TABLE  UserDetails
     FirstName Varchar NOT NULL, 
     SecondName Varchar NOT NULL, 
     DOB DATE NOT NULL,
-    PassportNO Varchar NOT NULL, 
+    PassportNO Varchar(60) NOT NULL, 
     Email Varchar NOT NULL,
     Password Varchar NOT NULL,
     PhoneNO Varchar NOT NULL,
