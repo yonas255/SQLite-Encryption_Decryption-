@@ -9,10 +9,23 @@
 <!-- in the project's Project Properties dialog box.-->
 <project name="SQlite" default="default" basedir=".">
     <description>Builds, tests, and runs the project SQlite.</description>
+    
     <import file="nbproject/build-impl.xml"/>
-    <!--
+    <!--defain a classpath includes jasypt jar-->
+    
+    
+        <path id = "project.Classpath">
+            <pathelement loaction = "library/jasypt-1.9.3.jar"/>
+        </path>
+    
+    <target name="-pre-compiled">
+        <mkdir dir="build/classes"/>
+    </target> 
+    <target name="-do-compile" depends="-pre-compile">
+        <javac srcdir="src" destdir="build/classes" classpathref="project.classpath" includeantruntime="false"/>
+    </target>        
 
-    There exist several targets which are by default empty and which can be 
+   <!-- There exist several targets which are by default empty and which can be 
     used for execution of your tasks. These targets are usually executed 
     before and after some main targets. They are: 
 

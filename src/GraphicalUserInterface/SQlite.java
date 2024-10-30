@@ -18,7 +18,7 @@ import static GraphicalUserInterface.login.getpassword;
 
 
 public class SQlite {
-
+    
     public static String url = "jdbc:sqlite:C:/DB/DB.db";
     public static void main(String[] args) {
         
