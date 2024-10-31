@@ -11,13 +11,13 @@ import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
  */
 public class DatabaseConf {
 
-  private static final String Encryption_KEY= "encryption_key";
+  private static final String Encryption_KEY= "EncryptionKey12@";
   private StandardPBEStringEncryptor Encryptor;
     
     public DatabaseConf(){
       Encryptor=new StandardPBEStringEncryptor();
       Encryptor.setPassword(Encryption_KEY);
-      Encryptor.setAlgorithm("THFDSXGH5DES");
+      Encryptor.setAlgorithm("PBEWithMD5AndDES");
 
   }
     public String encrpt(String textplain){

@@ -80,6 +80,7 @@ public class SQlite {
             
             ScriptRunner ();
             HashingPreviousPasswords();
+            encrptExistingUserDetails();
         
         } else {
 
@@ -146,7 +147,51 @@ public class SQlite {
            
            }
     }
-      
+    
+    public static void encrptExistingUserDetails() {
+    DatabaseConf config = new DatabaseConf(); // Assuming DatabaseConf is your encrption class
+
+    try (Connection conn = DriverManager.getConnection(url)) {
+        String selectQuery = "SELECT UserID, FirstName, SecondName, DOB, PassportNO, Email, PhoneNO, Country, PostCode FROM UserDetails";
+        String updateQuery = "UPDATE UserDetails SET FirstName = ?, SecondName = ?, DOB = ?, PassportNO = ?, Email = ?, PhoneNO = ?, Country = ?, PostCode = ? WHERE UserID = ?";
+
+        try (PreparedStatement selectStmt = conn.prepareStatement(selectQuery);
+             PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+             ResultSet rs = selectStmt.executeQuery()) {
+
+            while (rs.next()) {
+                String userId = rs.getString("UserID");
+                String encrptedFirstName = config.encrpt(rs.getString("FirstName"));
+                String encrptedSecondName = config.encrpt(rs.getString("SecondName"));
+                String encrptedDOB = config.encrpt(rs.getString("DOB"));
+                String encrptedPassportNO = config.encrpt(rs.getString("PassportNO"));
+                String encrptedEmail = config.encrpt(rs.getString("Email"));
+                String encrptedPhoneNO = config.encrpt(rs.getString("PhoneNO"));
+                String encrptedCountry = config.encrpt(rs.getString("Country"));
+                String encrptedPostCode = config.encrpt(rs.getString("PostCode"));
+
+                // Set the encrpted values in the update statement
+                updateStmt.setString(1, encrptedFirstName);
+                updateStmt.setString(2, encrptedSecondName);
+                updateStmt.setString(3, encrptedDOB);
+                updateStmt.setString(4, encrptedPassportNO);
+                updateStmt.setString(5, encrptedEmail);
+                updateStmt.setString(6, encrptedPhoneNO);
+                updateStmt.setString(7, encrptedCountry);
+                updateStmt.setString(8, encrptedPostCode);
+                updateStmt.setString(9, userId); // WHERE condition
+
+                // Execute the update
+                updateStmt.executeUpdate();
+            }
+            JOptionPane.showMessageDialog(null, "Existing user details have been encrpted successfully.");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, "Error encrpting existing user details: " + e.getMessage());
+    }
+}
+
+    
      public static void login() {
         
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")){  
@@ -210,6 +255,7 @@ public class SQlite {
     
      
     public static void AddNewCustomer() {
+    DatabaseConf configur = new DatabaseConf();
     String AddNewCustomer_SQL = "INSERT INTO UserDetails (UserID, FirstName, SecondName, DOB, PassportNO, Email, Password, PhoneNo, Country, PostCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     String ADD_CREDITCARD_SQL = "INSERT INTO UserBankCardDetails "
         + "(UserBankCardNumber, CardHolderName, UserCardExpiryDate,UserCardVerificationValue, UserID) VALUES (?, ?, ?, ?, ?)";
@@ -262,17 +308,12 @@ public class SQlite {
                 JOptionPane.showMessageDialog(null, "The Card with number " + UserBankCardNumber + " Already exist in the DB.");
                 return;
                 
-            }
-            
-            else if (userResult.next()) {
+            }else if (userResult.next()) {
                 
                 JOptionPane.showMessageDialog(null, "The user with id " + UserID + " already exist in the database.");
                 return;
                 
-            }
-           
-            
-            else {
+            }else {
             if (Registration.jTextField10.getText().isEmpty() || Registration.jTextField1.getText().isEmpty() ||
                 Registration.jTextField2.getText().isEmpty() || Registration.getyear.getText().isEmpty() ||
                 Registration.jTextField4.getText().isEmpty() || Registration.jTextField5.getText().isEmpty() ||
@@ -282,15 +323,15 @@ public class SQlite {
             } else {
                 PreparedStatement preparedStatement = connection.prepareStatement(AddNewCustomer_SQL);
                 preparedStatement.setString(1, UserID);
-                preparedStatement.setString(2, FirstName);
-                preparedStatement.setString(3, SecondName);
-                preparedStatement.setString(4, DOB);
-                preparedStatement.setString(5, passportNumber);
-                preparedStatement.setString(6, Email);
+                preparedStatement.setString(2, configur.encrpt(FirstName));
+                preparedStatement.setString(3, configur.encrpt(SecondName));
+                preparedStatement.setString(4, configur.encrpt(DOB));
+                preparedStatement.setString(5, configur.encrpt(passportNumber));
+                preparedStatement.setString(6, configur.encrpt(Email));
                 preparedStatement.setString(7, hashedpassword);
-                preparedStatement.setString(8, phoneNo);
-                preparedStatement.setString(9, Country);
-                preparedStatement.setString(10, PostCode);
+                preparedStatement.setString(8, configur.encrpt(phoneNo));
+                preparedStatement.setString(9, configur.encrpt(Country));
+                preparedStatement.setString(10, configur.encrpt(PostCode));
                 
                 
                 
@@ -334,23 +375,26 @@ public class SQlite {
 }
     
 public static void updateUserDetails() {
+    DatabaseConf conf =new DatabaseConf();
     try (Connection conn = DriverManager.getConnection(url)) {
         Statement statement = conn.createStatement();
         
         String password = EditUserAccount.jTextField5.getText();
         String hashedpassword=BCrypt.hashpw(password, BCrypt.gensalt());
+        
+        
      String updateQuery = "UPDATE UserDetails SET " +
-                "FirstName='" + EditUserAccount.jTextField2.getText() + "', " +
-                "SecondName='" + EditUserAccount.jTextField3.getText() + "', " +
-                "DOB='" + EditUserAccount.jTextField4.getText() + "-" +  EditUserAccount.jTextField11.getText() + "-" +
-                EditUserAccount.jTextField12.getText() + "', " +
-                "PassportNO='" + EditUserAccount.jTextField10.getText() + "', " +
-                "Email='" + EditUserAccount.jTextField5.getText() + "', " +
-                "Password='" + hashedpassword+ "', " +
-                "PhoneNO='" + EditUserAccount.jTextField7.getText() + "', " +
-                "Country='" + EditUserAccount.jTextField8.getText() + "', " + 
-                "PostCode='" + EditUserAccount.jTextField9.getText() + "' " +
-                "WHERE UserID='" + EditUserAccount.jTextField1.getText() + "'";
+                "FirstName='" +  conf.encrpt(EditUserAccount.jTextField2.getText() + "', " )+
+                "SecondName='" + conf.encrpt( EditUserAccount.jTextField3.getText() + "', " )+
+                "DOB='" + conf.encrpt(EditUserAccount.jTextField4.getText() + "-" +  EditUserAccount.jTextField11.getText() + "-" +
+                EditUserAccount.jTextField12.getText() + "', ") +
+                "PassportNO='" + conf.encrpt(EditUserAccount.jTextField10.getText() + "', " ) +
+                "Email='" + conf.encrpt(EditUserAccount.jTextField5.getText() + "', " ) +
+                "Password='" +  conf.encrpt(hashedpassword+ "', ") +
+                "PhoneNO='" + conf.encrpt(EditUserAccount.jTextField7.getText() + "', ") +
+                "Country='" + conf.encrpt(EditUserAccount.jTextField8.getText() + "', ") + 
+                "PostCode='" +conf.encrpt(EditUserAccount.jTextField9.getText() + "' " )+
+                "WHERE UserID='" + conf.encrpt(EditUserAccount.jTextField1.getText() + "'");
      
         
 
