@@ -195,50 +195,37 @@ public class SQlite {
         
     }
     
-    public static void login() {
-        
-        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")){  
+  public static void login() { //changes were made here
+    try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")) {
+        String UserID = getID.getText(); 
+        String UserPassWord = getpassword.getText();
 
-            String UserID = getID.getText(); 
-            String UserPassWord = getpassword.getText();
-            
-            PreparedStatement ID = conn.prepareStatement("select * from UserDetails where UserID=?");  
-            PreparedStatement PassWord = conn.prepareStatement("select * from UserDetails where Password=?");  
-            ID.setString(1, UserID); 
-            PassWord.setString(1, UserPassWord); 
-            //Excuting Query  
-            ResultSet rsForID = ID.executeQuery(); 
-            ResultSet rsForPassWord = PassWord.executeQuery(); 
-
-            if (rsForID.next() && rsForPassWord.next()) {
-                
-                //CustomerFirstFrame.
-                Menu.main(null);
-                
-            } 
-            
-            else {  
-                
-                JOptionPane.showMessageDialog(null, "Plases Insert Correct information!"); 
-                login.main(null);
-           
-            } 
-        } 
         
-        catch (Exception e) { 
-            
-            JOptionPane.showMessageDialog(null,(e.getMessage())); //error from try
-            
-            JOptionPane.showMessageDialog(null, "It Seems You Haven`t populate The Data. Please go back and Populate The Database");
-                
-                
-                    
-                    System.exit(0);
-                    
+        String query = "SELECT Password FROM UserDetails WHERE UserID = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, UserID);
+
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                String storedHashedPassword = rs.getString("Password");
+                if (BCrypt.checkpw(UserPassWord, storedHashedPassword)) { //compares that the user
+                                                             //input and hashedpassword are the same
+                    Menu.main(null);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Please enter correct information!");
+                    login.main(null);
                 }
-                
-                
-        }//end try catch
+            } else {
+                JOptionPane.showMessageDialog(null, "User ID does not exist.");
+                login.main(null);
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage());
+    }
+}
 
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
     private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
