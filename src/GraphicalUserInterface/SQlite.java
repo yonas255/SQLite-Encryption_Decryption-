@@ -15,6 +15,8 @@ import javax.swing.table.DefaultTableModel;
 import static GraphicalUserInterface.login.getID;
 import static GraphicalUserInterface.Registration.jTextField10;
 import static GraphicalUserInterface.login.getpassword;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import javax.swing.SwingUtilities;
 
 
@@ -94,18 +96,29 @@ public class SQlite {
     
     public static void ScriptRunner () {
         
+        PrintStream origout=System.out;
+        
         try {
+            System.setOut(new PrintStream(new OutputStream(){
+            @Override
+                public void write(int d){
+                // do nothing to silence the system.out
+                }
+            
+            }));
+            
             
             DriverManager.registerDriver(new org.sqlite.JDBC());
             Connection conn = DriverManager.getConnection(url);
             ScriptRunner runner = new ScriptRunner(conn, false, false);
             Reader reader =  new BufferedReader(new FileReader("src/GraphicalUserInterface/SQLTemplate.sql"));
             runner.runScript(reader);
+            
         
-        }
-        
-        catch (Exception e) {
+        }catch (Exception e) {
             System.out.println(e);
+        }finally{
+            System.setOut(origout);
         }
 
     }
