@@ -416,7 +416,7 @@ public class SQlite {
         }
     }
     
-    public static void updateUserDetails() {
+    public static void updateUserDetails() { 
         DatabaseConf conf =new DatabaseConf();
         try (Connection conn = DriverManager.getConnection(url)) {
             Statement statement = conn.createStatement();
@@ -451,58 +451,70 @@ public class SQlite {
         }
     }
 
-    public static void searchUserDetails() {
-        String UserID = EditUserAccount.jTextField1.getText();  
-        String query = "SELECT * FROM UserDetails WHERE UserID = ?";
+   public static void searchUserDetails() { //the information are not dispaying on the text field
+    DatabaseConf conf = new DatabaseConf();
+    String UserID = EditUserAccount.jTextField1.getText();
+    String query = "SELECT * FROM UserDetails WHERE UserID = ?";
 
-        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db");
-             PreparedStatement statement = connection.prepareStatement(query)) {
+    try (Connection connection = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db");
+         PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setString(1, UserID);
-            ResultSet resultSet = statement.executeQuery();
+        statement.setString(1, UserID);
+        ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                String Userid = resultSet.getString(1);
-                String FirstName = resultSet.getString(2);
-                String SecondName = resultSet.getString(3);
-                String DOB = resultSet.getString(4); // assign DOB to date variable
-                String PassportNumber = resultSet.getString(5);
-                String Email = resultSet.getString(6);
-                String Password = resultSet.getString(7);
-                String PhoneNO = resultSet.getString(8);
-                String Country = resultSet.getString(9);
-                String PostCode = resultSet.getString(10);
+        if (resultSet.next()) {
+     
+            String encryptedUserID = resultSet.getString(1);
+            String encryptedFirstName = resultSet.getString(2);
+            String encryptedSecondName = resultSet.getString(3);
+            String encryptedDOB = resultSet.getString(4);
+            String encryptedPassportNumber = resultSet.getString(5);
+            String encryptedEmail = resultSet.getString(6);
+            String encryptedPassword = resultSet.getString(7);
+            String encryptedPhoneNO = resultSet.getString(8);
+            String encryptedCountry = resultSet.getString(9);
+            String encryptedPostCode = resultSet.getString(10);
 
-                // Split DOB into year, month, and day values
-                String[] stringarray = DOB.split("-");
-                String year = stringarray[0];
-                String month = stringarray[1];
-                String day = stringarray[2];
+            String Userid = conf.decrpt(encryptedUserID);
+            String FirstName = conf.decrpt(encryptedFirstName);
+            String SecondName = conf.decrpt(encryptedSecondName);
+            String DOB = conf.decrpt(encryptedDOB);
+            String PassportNumber = conf.decrpt(encryptedPassportNumber);
+            String Email = conf.decrpt(encryptedEmail);
+            String Password = conf.decrpt(encryptedPassword);
+            String PhoneNO = conf.decrpt(encryptedPhoneNO);
+            String Country = conf.decrpt(encryptedCountry);
+            String PostCode = conf.decrpt(encryptedPostCode);
 
-                // Set records in text fields
-                EditUserAccount.jTextField1.setText(Userid);
-                EditUserAccount.jTextField2.setText(FirstName);
-                EditUserAccount.jTextField3.setText(SecondName);
-                //EditUserAccount.jTextField4.setText(year + "-" + month + "-" + day); // set date value
+            // Split DOB into year, month, and day values
+            String[] stringarray = DOB.split("-");
+            String year = stringarray[0];
+            String month = stringarray[1];
+            String day = stringarray[2];
 
-                EditUserAccount.jTextField4.setText(stringarray[0]);
-                EditUserAccount.jTextField11.setText(stringarray[1]);
-                EditUserAccount.jTextField12.setText(stringarray[2]);
-                EditUserAccount.jTextField10.setText(PassportNumber);
-                EditUserAccount.jTextField5.setText(Email);
-                EditUserAccount.jTextField6.setText(Password);
-                EditUserAccount.jTextField7.setText(PhoneNO);
-                EditUserAccount.jTextField8.setText(Country);
-                EditUserAccount.jTextField9.setText(PostCode);
+            //  this section set the records in text fields with decrypted values
+            EditUserAccount.jTextField1.setText(Userid);
+            EditUserAccount.jTextField2.setText(FirstName);
+            EditUserAccount.jTextField3.setText(SecondName);
+            EditUserAccount.jTextField4.setText(stringarray[0]);
+            EditUserAccount.jTextField11.setText(stringarray[1]);
+            EditUserAccount.jTextField12.setText(stringarray[2]);
+            EditUserAccount.jTextField10.setText(PassportNumber);
+            EditUserAccount.jTextField5.setText(Email);
+            EditUserAccount.jTextField6.setText(Password);
+            EditUserAccount.jTextField7.setText(PhoneNO);
+            EditUserAccount.jTextField8.setText(Country);
+            EditUserAccount.jTextField9.setText(PostCode);
 
-            } else {
-                JOptionPane.showMessageDialog(null, "No results found for User ID " + UserID);
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, e.getMessage());
+        } else {
+            JOptionPane.showMessageDialog(null, "No results found for User ID " + UserID);
         }
+
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(null, e.getMessage());
     }
+}
+
  
     public static void deleteUserDetails() {
         String userID = EditUserAccount.jTextField1.getText();
