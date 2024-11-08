@@ -82,6 +82,7 @@ public class SQlite {
             ScriptRunner ();
             HashingPreviousPasswords();
             encrptExistingUserDetails();
+            encrptExistingBankDetails();
         
         } else {
 
@@ -194,8 +195,44 @@ public class SQlite {
         }
     }
     
-    public static void encrptBankDetails(){
-        
+    public static void encrptExistingBankDetails(){
+        DatabaseConf config = new DatabaseConf(); // Assuming DatabaseConf is your encrption class
+
+        try (Connection conn = DriverManager.getConnection(url)) {
+            String selectQuery = "SELECT UserID, UserBankCardNumber, CardHolderName, UserCardExpiryDate, UserCardVerificationValue FROM UserBankCardDetails";
+            String updateQuery = "UPDATE UserBankCardDetails SET UserID = ?, UserBankCardNumber = ?, CardHolderName = ?, UserCardExpiryDate = ?, UserCardVerificationValue = ? WHERE UserID = ?";
+
+            try (PreparedStatement selectStmt = conn.prepareStatement(selectQuery);
+                 PreparedStatement updateStmt = conn.prepareStatement(updateQuery);
+                 ResultSet rs = selectStmt.executeQuery()) {
+
+                while (rs.next()) {
+                    String userId = rs.getString("UserID");
+                    String encryptedUserId = config.AESencrpt(rs.getString("UserID"));
+                    String encryptedUserBankCardNumber = config.AESencrpt(rs.getString("UserBankCardNumber"));
+                    String encryptedCardHolderName = config.AESencrpt(rs.getString("CardHolderName"));
+                    String encryptedUserCardExpiryDate = config.AESencrpt(rs.getString("UserCardExpiryDate"));
+                    String encryptedUserCardVerificationValue = config.AESencrpt(rs.getString("UserCardVerificationValue"));
+                    
+                    // Set the encrpted values in the update statement
+                    updateStmt.setString(1, encryptedUserId);
+                    updateStmt.setString(2, encryptedUserBankCardNumber);
+                    updateStmt.setString(3, encryptedCardHolderName);
+                    updateStmt.setString(4, encryptedUserCardExpiryDate);
+                    updateStmt.setString(5, encryptedUserCardVerificationValue);
+                    
+                    updateStmt.setString(6, userId); // WHERE condition
+                    
+                    System.out.println(updateStmt.toString());
+
+                    // Execute the update
+                    updateStmt.executeUpdate();
+                }
+                JOptionPane.showMessageDialog(null, "Existing bank details have been encrpted successfully.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Error encrpting existing bank details: " + e.getMessage());
+        }
     }
     
   public static void login() { //changes were made here
