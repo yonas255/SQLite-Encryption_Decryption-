@@ -15,6 +15,7 @@ import javax.swing.table.DefaultTableModel;
 import static GraphicalUserInterface.login.getID;
 import static GraphicalUserInterface.Registration.jTextField10;
 import static GraphicalUserInterface.login.getpassword;
+import javax.swing.SwingUtilities;
 
 
 public class SQlite {
@@ -52,7 +53,7 @@ public class SQlite {
             
             directory.mkdir(); //creates the folder were the DB will be saved.
             JOptionPane.showMessageDialog(null, "The Databse has been created successfully!");
-            login.main(null);
+            
                 
             //Makes a connection called conn to the url created earlier
             try (Connection conn = DriverManager.getConnection(url)) {
@@ -185,6 +186,8 @@ public class SQlite {
                     updateStmt.executeUpdate();
                 }
                 JOptionPane.showMessageDialog(null, "Existing user details have been encrpted successfully.");
+                SwingUtilities.invokeLater(() -> login.main(null));
+
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error encrpting existing user details: " + e.getMessage());
