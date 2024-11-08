@@ -3,8 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package GraphicalUserInterface;
-import org.jasypt.util.text.BasicTextEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
+import org.jasypt.exceptions.EncryptionOperationNotPossibleException;
 import org.jasypt.util.text.AES256TextEncryptor;
 
 /**
@@ -29,9 +29,17 @@ public class DatabaseConf {
         return Encryptor.encrypt(textplain);
     }
     
-    public String decrpt(String Encryptedtext){
-        return Encryptor.decrypt(Encryptedtext);
+    public String decrpt(String encryptedData) {
+    try {
+        StandardPBEStringEncryptor encryptor = new StandardPBEStringEncryptor();
+        encryptor.setPassword(Encryption_KEY); // Must match the key used during encryption
+        encryptor.setAlgorithm("PBEWithMD5AndDES"); // Ensure this matches
+        return encryptor.decrypt(encryptedData);
+    } catch (EncryptionOperationNotPossibleException e) {
+        System.err.println("Decryption failed: " + e.getMessage());
+        return null;
     }
+}
     
     public String AESencrpt(String textplain){
         return AESEncryptor.encrypt(textplain);
