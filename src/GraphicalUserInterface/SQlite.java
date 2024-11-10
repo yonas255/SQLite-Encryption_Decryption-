@@ -221,14 +221,13 @@ public class SQlite {
 
                 while (rs.next()) {
                     String userId = rs.getString("UserID");
-                    String encryptedUserId = config.AESencrpt(rs.getString("UserID"));
                     String encryptedUserBankCardNumber = config.AESencrpt(rs.getString("UserBankCardNumber"));
                     String encryptedCardHolderName = config.AESencrpt(rs.getString("CardHolderName"));
                     String encryptedUserCardExpiryDate = config.AESencrpt(rs.getString("UserCardExpiryDate"));
                     String encryptedUserCardVerificationValue = config.AESencrpt(rs.getString("UserCardVerificationValue"));
                     
                     // Set the encrpted values in the update statement
-                    updateStmt.setString(1, encryptedUserId);
+                    updateStmt.setString(1, userId);
                     updateStmt.setString(2, encryptedUserBankCardNumber);
                     updateStmt.setString(3, encryptedCardHolderName);
                     updateStmt.setString(4, encryptedUserCardExpiryDate);
@@ -236,8 +235,6 @@ public class SQlite {
                     
                     updateStmt.setString(6, userId); // WHERE condition
                     
-                    System.out.println(updateStmt.toString());
-
                     // Execute the update
                     updateStmt.executeUpdate();
                 }
@@ -640,23 +637,25 @@ public class SQlite {
     }
   
     public static void searchBankDetail() {
+        DatabaseConf conf = new DatabaseConf();
+        
         String UsersID = BankDetail.jTextField5.getText();
         String query = "SELECT * FROM UserBankCardDetails WHERE  UserID = ?";
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db");
              PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setString(1,  UsersID);
+            statement.setString(1, UsersID);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
 
-                String UserBankCardNumber  = resultSet.getString(1);
-                String  CardHolderName = resultSet.getString(2);
-                String  UserCardExpiryDate = resultSet.getString(3);
-                String  UserCardVerificationValue = resultSet.getString(4);
+                String UserBankCardNumber  = conf.AESdecrpt(resultSet.getString(1));
+                String  CardHolderName = conf.AESdecrpt(resultSet.getString(2));
+                String  UserCardExpiryDate = conf.AESdecrpt(resultSet.getString(3));
+                String  UserCardVerificationValue = conf.AESdecrpt(resultSet.getString(4));
                 String  UserID = resultSet.getString(5);
-
+                
                 // Set records in text fields
                 BankDetail.jTextField1.setText(UserBankCardNumber);
                 BankDetail.jTextField2.setText(CardHolderName);
