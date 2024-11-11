@@ -298,8 +298,8 @@ public class SQlite {
         String AddNewCustomer_SQL = "INSERT INTO UserDetails (UserID, FirstName, SecondName, DOB, PassportNO, Email, Password, PhoneNo, Country, PostCode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         String ADD_CREDITCARD_SQL = "INSERT INTO UserBankCardDetails "
             + "(UserBankCardNumber, CardHolderName, UserCardExpiryDate,UserCardVerificationValue, UserID) VALUES (?, ?, ?, ?, ?)";
-
-
+ 
+ 
         String UserID = Registration.jTextField10.getText();
         String FirstName = Registration.jTextField1.getText();
         String SecondName = Registration.jTextField2.getText();
@@ -317,41 +317,41 @@ public class SQlite {
         String UserCardExpiryDate= Registration.jTextField12.getText() + "-" + Registration.jTextField13.getText() + "-" +
                     Registration.jTextField14.getText();
          String UserCardVerificationValue = Registration.jTextField15.getText();
-
+ 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")) {
             // Check if the UserDetails table exists
             String CHECK_TABLE_SQL = "SELECT name FROM sqlite_master WHERE type='table' AND name='UserDetails';";
             PreparedStatement checkTable = connection.prepareStatement(CHECK_TABLE_SQL);
             ResultSet tableResult = checkTable.executeQuery();
-
+ 
             if (!tableResult.next()) {
                 JOptionPane.showMessageDialog(null, "The UserDetails table doesn't exist in the database.");
                 return;
             }
-
+ 
                 // Check if the User exists
                 String CHECK_USER_SQL = "SELECT * FROM UserDetails WHERE UserID = ?";
                 PreparedStatement checUser = connection.prepareStatement(CHECK_USER_SQL);
                 checUser.setString(1, UserID);
                 ResultSet userResult = checUser.executeQuery();
-
-
+ 
+ 
                 String CHECK_CreditCard_SQL = "SELECT * FROM UserBankCardDetails WHERE UserBankCardNumber = ?";
-
+ 
                 PreparedStatement checCard = connection.prepareStatement(CHECK_CreditCard_SQL);
                 checCard.setString(1, UserBankCardNumber);
                 ResultSet CardResult = checCard.executeQuery();
-
+ 
                 if (CardResult.next()) {
-
+ 
                     JOptionPane.showMessageDialog(null, "The Card with number " + UserBankCardNumber + " Already exist in the DB.");
                     return;
-
+ 
                 }else if (userResult.next()) {
-
+ 
                     JOptionPane.showMessageDialog(null, "The user with id " + UserID + " already exist in the database.");
                     return;
-
+ 
                 }else {
                 if (Registration.jTextField10.getText().isEmpty() || Registration.jTextField1.getText().isEmpty() ||
                     Registration.jTextField2.getText().isEmpty() || Registration.getyear.getText().isEmpty() ||
@@ -371,21 +371,20 @@ public class SQlite {
                     preparedStatement.setString(8, configur.encrpt(phoneNo));
                     preparedStatement.setString(9, configur.encrpt(Country));
                     preparedStatement.setString(10, configur.encrpt(PostCode));
-
-
-
-                    PreparedStatement preparedStatement1 = connection.prepareStatement(ADD_CREDITCARD_SQL); 
-
-                    preparedStatement1.setString(1, UserBankCardNumber);
-                    preparedStatement1.setString(2, CardHolderName);
-                    preparedStatement1.setString(3, UserCardExpiryDate);
-                    preparedStatement1.setString(4, UserCardVerificationValue);
+ 
+ 
+                    PreparedStatement preparedStatement1 = connection.prepareStatement(ADD_CREDITCARD_SQL);
+ 
+                    preparedStatement1.setString(1, configur.AESencrpt(UserBankCardNumber));
+                    preparedStatement1.setString(2, configur.AESencrpt(CardHolderName));
+                    preparedStatement1.setString(3, configur.AESencrpt(UserCardExpiryDate));
+                    preparedStatement1.setString(4, configur.AESencrpt(UserCardVerificationValue));
                     preparedStatement1.setString(5, UserID);
-
+ 
                         preparedStatement1.executeUpdate();
                         preparedStatement.executeUpdate();
-
-
+ 
+ 
                     JOptionPane.showMessageDialog(null, "New user with ID " + UserID + " has been added to the database.");
                    jTextField10.setText(null);
                     Registration.getyear.setText(null);
@@ -650,18 +649,33 @@ public class SQlite {
 
             if (resultSet.next()) {
 
-                String UserBankCardNumber  = conf.AESdecrpt(resultSet.getString(1));
-                String  CardHolderName = conf.AESdecrpt(resultSet.getString(2));
-                String  UserCardExpiryDate = conf.AESdecrpt(resultSet.getString(3));
-                String  UserCardVerificationValue = conf.AESdecrpt(resultSet.getString(4));
+                String UserBankCardNumber  = resultSet.getString(1);
+                String  CardHolderName = resultSet.getString(2);
+                String  UserCardExpiryDate = resultSet.getString(3);
+                String  UserCardVerificationValue = resultSet.getString(4);
                 String  UserID = resultSet.getString(5);
                 
-                // Set records in text fields
-                BankDetail.jTextField1.setText(UserBankCardNumber);
-                BankDetail.jTextField2.setText(CardHolderName);
-                BankDetail.jTextField3.setText(UserCardExpiryDate);
-                BankDetail.jTextField4.setText(UserCardVerificationValue);
-                BankDetail.jTextField5.setText(UserID);
+              try {
+    String decryptUserBankCardNumber = conf.AESdecrpt(UserBankCardNumber);
+    String decryptCardHolderName = conf.AESdecrpt(CardHolderName);
+    String decryptCardExpiryDate = conf.AESdecrpt(UserCardExpiryDate);
+    String decryptUserVerificationValue = conf.AESdecrpt(UserCardVerificationValue);
+    String decryptUserID = conf.AESdecrpt(UserID);
+    
+    // Handle if decryption fails (returns null or empty)
+    if (decryptUserBankCardNumber == null || decryptCardHolderName == null) {
+        throw new Exception("Decryption failed for one or more fields");
+    }
+
+    // Set records in text fields
+    BankDetail.jTextField1.setText(decryptUserBankCardNumber);
+    BankDetail.jTextField2.setText(decryptCardHolderName);
+    BankDetail.jTextField3.setText(decryptCardExpiryDate);
+    BankDetail.jTextField4.setText(decryptUserVerificationValue);
+    BankDetail.jTextField5.setText(decryptUserID);
+} catch (Exception e) {
+    JOptionPane.showMessageDialog(null, "Decryption error: " + e.getMessage());
+}
 
 
             } 
