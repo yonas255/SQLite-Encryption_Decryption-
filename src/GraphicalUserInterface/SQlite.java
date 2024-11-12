@@ -460,24 +460,22 @@ public class SQlite {
 
         if (resultSet.next()) {
      
-            String encryptedUserID = resultSet.getString(1);
+            UserID = resultSet.getString(1);
             String encryptedFirstName = resultSet.getString(2);
             String encryptedSecondName = resultSet.getString(3);
             String encryptedDOB = resultSet.getString(4);
             String encryptedPassportNumber = resultSet.getString(5);
             String encryptedEmail = resultSet.getString(6);
-            String encryptedPassword = resultSet.getString(7);
             String encryptedPhoneNO = resultSet.getString(8);
             String encryptedCountry = resultSet.getString(9);
             String encryptedPostCode = resultSet.getString(10);
 
-            String Userid = conf.decrpt(encryptedUserID);
             String FirstName = conf.decrpt(encryptedFirstName);
             String SecondName = conf.decrpt(encryptedSecondName);
             String DOB = conf.decrpt(encryptedDOB);
             String PassportNumber = conf.decrpt(encryptedPassportNumber);
             String Email = conf.decrpt(encryptedEmail);
-            String Password = conf.decrpt(encryptedPassword);
+            String Password = getpassword.getText(); //Can't be retrieved from database
             String PhoneNO = conf.decrpt(encryptedPhoneNO);
             String Country = conf.decrpt(encryptedCountry);
             String PostCode = conf.decrpt(encryptedPostCode);
@@ -489,7 +487,7 @@ public class SQlite {
             String day = stringarray[2];
 
             //  this section set the records in text fields with decrypted values
-            EditUserAccount.jTextField1.setText(Userid);
+            EditUserAccount.jTextField1.setText(UserID);
             EditUserAccount.jTextField2.setText(FirstName);
             EditUserAccount.jTextField3.setText(SecondName);
             EditUserAccount.jTextField4.setText(stringarray[0]);
@@ -638,13 +636,13 @@ public class SQlite {
     public static void searchBankDetail() {
         DatabaseConf conf = new DatabaseConf();
         
-        String UsersID = BankDetail.jTextField5.getText();
+        String UserID = BankDetail.jTextField5.getText();
         String query = "SELECT * FROM UserBankCardDetails WHERE  UserID = ?";
 
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db");
              PreparedStatement statement = connection.prepareStatement(query)) {
 
-            statement.setString(1, UsersID);
+            statement.setString(1, UserID);
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
@@ -653,30 +651,28 @@ public class SQlite {
                 String  CardHolderName = resultSet.getString(2);
                 String  UserCardExpiryDate = resultSet.getString(3);
                 String  UserCardVerificationValue = resultSet.getString(4);
-                String  UserID = resultSet.getString(5);
+                UserID = resultSet.getString(5);
                 
-              try {
-    String decryptUserBankCardNumber = conf.AESdecrpt(UserBankCardNumber);
-    String decryptCardHolderName = conf.AESdecrpt(CardHolderName);
-    String decryptCardExpiryDate = conf.AESdecrpt(UserCardExpiryDate);
-    String decryptUserVerificationValue = conf.AESdecrpt(UserCardVerificationValue);
-    String decryptUserID = conf.AESdecrpt(UserID);
-    
-    // Handle if decryption fails (returns null or empty)
-    if (decryptUserBankCardNumber == null || decryptCardHolderName == null) {
-        throw new Exception("Decryption failed for one or more fields");
-    }
+                try {
+                    String decryptUserBankCardNumber = conf.AESdecrpt(UserBankCardNumber);
+                    String decryptCardHolderName = conf.AESdecrpt(CardHolderName);
+                    String decryptCardExpiryDate = conf.AESdecrpt(UserCardExpiryDate);
+                    String decryptUserVerificationValue = conf.AESdecrpt(UserCardVerificationValue);
 
-    // Set records in text fields
-    BankDetail.jTextField1.setText(decryptUserBankCardNumber);
-    BankDetail.jTextField2.setText(decryptCardHolderName);
-    BankDetail.jTextField3.setText(decryptCardExpiryDate);
-    BankDetail.jTextField4.setText(decryptUserVerificationValue);
-    BankDetail.jTextField5.setText(decryptUserID);
-} catch (Exception e) {
-    JOptionPane.showMessageDialog(null, "Decryption error: " + e.getMessage());
-}
+                    // Handle if decryption fails (returns null or empty)
+                    if (decryptUserBankCardNumber == null || decryptCardHolderName == null) {
+                        throw new Exception("Decryption failed for one or more fields");
+                    }
 
+                    // Set records in text fields
+                    BankDetail.jTextField1.setText(decryptUserBankCardNumber);
+                    BankDetail.jTextField2.setText(decryptCardHolderName);
+                    BankDetail.jTextField3.setText(decryptCardExpiryDate);
+                    BankDetail.jTextField4.setText(decryptUserVerificationValue);
+                    BankDetail.jTextField5.setText(UserID);
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(null, "Decryption error: " + e.getMessage());
+                }
 
             } 
 
