@@ -200,7 +200,7 @@ public class SQlite {
                     updateStmt.executeUpdate();
                 }
                 JOptionPane.showMessageDialog(null, "Existing user details have been encrpted successfully.");
-                SwingUtilities.invokeLater(() -> login.main(null));
+                
 
             }
         } catch (SQLException e) {
@@ -239,6 +239,7 @@ public class SQlite {
                     updateStmt.executeUpdate();
                 }
                 JOptionPane.showMessageDialog(null, "Existing bank details have been encrpted successfully.");
+                SwingUtilities.invokeLater(() -> login.main(null));
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error encrpting existing bank details: " + e.getMessage());
@@ -246,6 +247,14 @@ public class SQlite {
     }
     
   public static void login() { //changes were made here
+      
+      File DBFile = new File ("C:/DB/DB.db");
+      if(!DBFile.exists()){
+      JOptionPane.showMessageDialog(null, "The Database seems not been Create and Populated yet..Please Created the DB");
+      NewJFrame.main(null);
+      return;
+      
+      }
     try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")) {
         String UserID = getID.getText(); 
         String UserPassWord = getpassword.getText();
@@ -415,10 +424,6 @@ public class SQlite {
     public static void updateUserDetails() { 
         DatabaseConf conf =new DatabaseConf();
         try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")) {
-
-            String password = EditUserAccount.jTextField6.getText();
-            String hashedpassword=BCrypt.hashpw(password, BCrypt.gensalt());
-
 
             String updateQuery = "UPDATE UserDetails SET " +
            "FirstName=?, SecondName=?, DOB=?, PassportNO=?, Email=?, PhoneNO=?, Country=?, PostCode=? WHERE UserID=?";

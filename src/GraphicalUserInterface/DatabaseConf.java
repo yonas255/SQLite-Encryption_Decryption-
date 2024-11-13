@@ -14,9 +14,9 @@ import org.jasypt.util.text.AES256TextEncryptor;
  */
 public class DatabaseConf {
     private static final String Encryption_KEY = "EncryptionKey12@"; 
-    private StandardPBEStringEncryptor Encryptor;
     private AES256TextEncryptor AESEncryptor;
-
+    private StandardPBEStringEncryptor Encryptor;
+    private static final String AES_Password = "BANKPASSWORD";
     // Constructor
     public DatabaseConf() {
         Encryptor = new StandardPBEStringEncryptor();
@@ -26,7 +26,7 @@ public class DatabaseConf {
         
         
         AESEncryptor = new AES256TextEncryptor();
-        AESEncryptor.setPassword("BANKPASSWORD"); //this is the AES password 
+        AESEncryptor.setPassword(AES_Password); //this is the AES password 
     }
 
 
