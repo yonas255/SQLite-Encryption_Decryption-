@@ -414,33 +414,31 @@ public class SQlite {
     
     public static void updateUserDetails() { 
         DatabaseConf conf =new DatabaseConf();
-        try (Connection conn = DriverManager.getConnection(url)) {
-            Statement statement = conn.createStatement();
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:C:/DB/DB.db")) {
 
-            String password = EditUserAccount.jTextField5.getText();
+            String password = EditUserAccount.jTextField6.getText();
             String hashedpassword=BCrypt.hashpw(password, BCrypt.gensalt());
 
 
-         String updateQuery = "UPDATE UserDetails SET " +
-                    "FirstName='" +  conf.encrpt(EditUserAccount.jTextField2.getText() + "', " )+
-                    "SecondName='" + conf.encrpt( EditUserAccount.jTextField3.getText() + "', " )+
-                    "DOB='" + conf.encrpt(EditUserAccount.jTextField4.getText() + "-" +  EditUserAccount.jTextField11.getText() + "-" +
-                    EditUserAccount.jTextField12.getText() + "', ") +
-                    "PassportNO='" + conf.encrpt(EditUserAccount.jTextField10.getText() + "', " ) +
-                    "Email='" + conf.encrpt(EditUserAccount.jTextField5.getText() + "', " ) +
-                    "Password='" +  conf.encrpt(hashedpassword+ "', ") +
-                    "PhoneNO='" + conf.encrpt(EditUserAccount.jTextField7.getText() + "', ") +
-                    "Country='" + conf.encrpt(EditUserAccount.jTextField8.getText() + "', ") + 
-                    "PostCode='" +conf.encrpt(EditUserAccount.jTextField9.getText() + "' " )+
-                    "WHERE UserID='" + conf.encrpt(EditUserAccount.jTextField1.getText() + "'");
-
-
-
-            statement.executeUpdate(updateQuery);
+            String updateQuery = "UPDATE UserDetails SET " +
+           "FirstName=?, SecondName=?, DOB=?, PassportNO=?, Email=?, Password=?, PhoneNO=?, Country=?, PostCode=? WHERE UserID=?";
+           PreparedStatement preparedStatement = conn.prepareStatement(updateQuery);
+           preparedStatement.setString(1, conf.encrpt(EditUserAccount.jTextField2.getText()));
+           preparedStatement.setString(2, conf.encrpt(EditUserAccount.jTextField3.getText()));
+           preparedStatement.setString(3, conf.encrpt(EditUserAccount.jTextField4.getText() + "-" +  EditUserAccount.jTextField11.getText() + "-" + EditUserAccount.jTextField12.getText()) );
+           preparedStatement.setString(4, conf.encrpt(EditUserAccount.jTextField10.getText()));
+           preparedStatement.setString(5, conf.encrpt(EditUserAccount.jTextField5.getText()));
+           preparedStatement.setString(6, conf.encrpt(hashedpassword));
+           preparedStatement.setString(7, conf.encrpt(EditUserAccount.jTextField7.getText()));
+           preparedStatement.setString(8, conf.encrpt(EditUserAccount.jTextField8.getText()));
+           preparedStatement.setString(9, conf.encrpt(EditUserAccount.jTextField9.getText()));
+           preparedStatement.setString(10, conf.encrpt(EditUserAccount.jTextField1.getText()));
+            
+            preparedStatement.executeUpdate();
 
 
             JOptionPane.showMessageDialog(null, "Record updated for the User ID " + EditUserAccount.jTextField1.getText());
-            statement.close();
+            //preparedStatement.close();
             conn.close();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.getMessage());
