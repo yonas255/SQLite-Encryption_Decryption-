@@ -177,6 +177,7 @@ public class EditUserAccount extends javax.swing.JFrame {
         });
 
         jTextField6.setFont(new java.awt.Font("Century", 0, 18)); // NOI18N
+        jTextField6.setEnabled(false);
         jTextField6.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 jTextField6KeyPressed(evt);

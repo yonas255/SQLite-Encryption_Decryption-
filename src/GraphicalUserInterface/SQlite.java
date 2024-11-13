@@ -421,18 +421,17 @@ public class SQlite {
 
 
             String updateQuery = "UPDATE UserDetails SET " +
-           "FirstName=?, SecondName=?, DOB=?, PassportNO=?, Email=?, Password=?, PhoneNO=?, Country=?, PostCode=? WHERE UserID=?";
+           "FirstName=?, SecondName=?, DOB=?, PassportNO=?, Email=?, PhoneNO=?, Country=?, PostCode=? WHERE UserID=?";
            PreparedStatement preparedStatement = conn.prepareStatement(updateQuery);
            preparedStatement.setString(1, conf.encrpt(EditUserAccount.jTextField2.getText()));
            preparedStatement.setString(2, conf.encrpt(EditUserAccount.jTextField3.getText()));
            preparedStatement.setString(3, conf.encrpt(EditUserAccount.jTextField4.getText() + "-" +  EditUserAccount.jTextField11.getText() + "-" + EditUserAccount.jTextField12.getText()) );
            preparedStatement.setString(4, conf.encrpt(EditUserAccount.jTextField10.getText()));
            preparedStatement.setString(5, conf.encrpt(EditUserAccount.jTextField5.getText()));
-           preparedStatement.setString(6, conf.encrpt(hashedpassword));
-           preparedStatement.setString(7, conf.encrpt(EditUserAccount.jTextField7.getText()));
-           preparedStatement.setString(8, conf.encrpt(EditUserAccount.jTextField8.getText()));
-           preparedStatement.setString(9, conf.encrpt(EditUserAccount.jTextField9.getText()));
-           preparedStatement.setString(10, conf.encrpt(EditUserAccount.jTextField1.getText()));
+           preparedStatement.setString(6, conf.encrpt(EditUserAccount.jTextField7.getText()));
+           preparedStatement.setString(7, conf.encrpt(EditUserAccount.jTextField8.getText()));
+           preparedStatement.setString(8, conf.encrpt(EditUserAccount.jTextField9.getText()));
+           preparedStatement.setString(9, EditUserAccount.jTextField1.getText());
             
             preparedStatement.executeUpdate();
 
