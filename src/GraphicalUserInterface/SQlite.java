@@ -15,6 +15,9 @@ import javax.swing.table.DefaultTableModel;
 import static GraphicalUserInterface.login.getID;
 import static GraphicalUserInterface.Registration.jTextField10;
 import static GraphicalUserInterface.login.getpassword;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import javax.swing.SwingUtilities;
@@ -111,7 +114,13 @@ public class SQlite {
             DriverManager.registerDriver(new org.sqlite.JDBC());
             Connection conn = DriverManager.getConnection(url);
             ScriptRunner runner = new ScriptRunner(conn, false, false);
-            Reader reader =  new BufferedReader(new FileReader("src/GraphicalUserInterface/SQLTemplate.sql"));
+            InputStream Input = ScriptRunner.class.getResourceAsStream("/GraphicalUserInterface/SQLTemplate.sql");
+           
+            // Reader reader =  new BufferedReader(new FileReader("src/GraphicalUserInterface/SQLTemplate.sql"));
+            if(Input == null){
+              throw new FileNotFoundException("SQLTemplet.sql not found");
+            }
+             Reader reader = new BufferedReader(new InputStreamReader(Input));     
             runner.runScript(reader);
             
         
