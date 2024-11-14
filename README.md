@@ -3,7 +3,7 @@ This application has a function that allows the user to purchase flight tickets.
 all the source code will be found on Master Branch...
 
 Steps to downloade and access the Application.
-  1. Download the ZipFile using the link on right side of the SQLite-Encryption_Decryption Repository or access the main branch dist.SQLite.JarFile.zip. or use this link https://github.com/yonas255/SQLite-Encryption_Decryption-/raw/main/dist.SQLite.JarFile.zip
+  1. Download the ZipFile using the link on right side of the SQLite-Encryption_Decryption Repository or use this link https://github.com/yonas255/SQLite-Encryption_Decryption-/raw/main/dist.SQLite.JarFile.zip
   2. extract all  zip files..if the zip file doesn`t extracted all the application will not to be accessible!
   3. In the Extracted file access and open  SQLite.Jar.
   4. after opening the Jar File go head and create the DataBase and Populate the Sql Table.
