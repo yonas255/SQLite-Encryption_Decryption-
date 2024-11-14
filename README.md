@@ -11,7 +11,7 @@ Steps to downloade and access the Application.
   6. Make sure if the DB Size is 36 KB or more to check if the databse tables populated successfully.
   7. You also might need to access the C:\DB using DB Browser or MYSQL Workbench just to so if the application working as expected and all user details and bank details are Encrypted.
   8.  Now you can start and  acess the application.
-  9.  when you try to login you can use the user details on below location.
+  9.  when you try to login you can grab the user details from below location.
        https://github.com/yonas255/SQLite-Encryption_Decryption-/blob/master/src/GraphicalUserInterface/SQLTemplate.sql
   10. or you can register as new user and make sure you remenber your UserID and Password that you will use to log in.
   11. GO Ahead and Explore.......Let Me Know If You Have any Feedback THANKS!!
